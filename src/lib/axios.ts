@@ -52,6 +52,7 @@ apiClient.interceptors.response.use(
           const redirectUrl = `/login?expired=1&returnUrl=${encodeURIComponent(
             window.location.pathname + window.location.search
           )}`;
+          // eslint-disable-next-line @next/next/no-location-assign-relative-destination
           window.location.href = redirectUrl;
         }
       }

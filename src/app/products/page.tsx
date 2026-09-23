@@ -15,7 +15,7 @@ import ErrorState from "@/components/common/ErrorState";
 import { useProducts } from "@/hooks/useProducts";
 import { useProductOverlay } from "@/context/ProductOverlayContext";
 import { Product, ProductFormData } from "@/types/product";
-import { CheckCircle2, Package, Sparkles } from "lucide-react";
+import { CheckCircle2, Package } from "lucide-react";
 
 function ProductsDashboardContent() {
   const {

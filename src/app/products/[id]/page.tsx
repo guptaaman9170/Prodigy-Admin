@@ -16,7 +16,6 @@ import {
   Truck,
   RotateCcw,
   Sparkles,
-  Package,
   AlertTriangle,
   Loader2,
   Calendar,

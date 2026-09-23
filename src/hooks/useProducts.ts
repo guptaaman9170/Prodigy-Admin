@@ -181,8 +181,8 @@ export function useProducts() {
       let finalProducts = overlayResult.products;
       if (sortBy && sortBy !== "none") {
         finalProducts = [...finalProducts].sort((a, b) => {
-          let valA = a[sortBy];
-          let valB = b[sortBy];
+          const valA = a[sortBy];
+          const valB = b[sortBy];
 
           if (typeof valA === "string") {
             const cmp = (valA as string).localeCompare(valB as string);

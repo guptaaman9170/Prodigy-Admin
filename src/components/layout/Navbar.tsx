@@ -8,9 +8,7 @@ import {
   ShieldCheck,
   LogOut,
   RotateCcw,
-  Sparkles,
   User as UserIcon,
-  ChevronDown,
 } from "lucide-react";
 
 export default function Navbar() {
