@@ -20,10 +20,10 @@ export default function HomePage() {
   }, [isAuthenticated, isLoading, router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="flex flex-col items-center gap-3">
-        <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
-        <span className="text-sm text-slate-400 font-medium">Loading Prodigy Admin...</span>
+        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+        <span className="text-xs text-slate-500 font-semibold">Loading PulseStack PRO...</span>
       </div>
     </div>
   );
