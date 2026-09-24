@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { useRouter } from "next/navigation";
 import { User, LoginCredentials } from "@/types/auth";
 import { authService } from "@/services/authService";
+import { productService } from "@/services/productService";
 
 interface AuthContextType {
   user: User | null;
@@ -74,6 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Logout handler
   const logout = useCallback(() => {
+    productService.clearCache();
     authService.logout();
     setUser(null);
     setToken(null);
