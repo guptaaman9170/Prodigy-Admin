@@ -3,32 +3,42 @@ import { LoginCredentials, User } from "@/types/auth";
 
 export const authService = {
   /**
-   * Authenticates the user with DummyJSON /auth/login endpoint
+   * Authenticates the user with DummyJSON auth endpoint via resilient route
    */
   async login(credentials: LoginCredentials): Promise<User> {
-    const doLogin = async () => {
-      const response = await apiClient.post<User>("/auth/login", credentials, {
-        timeout: 30000,
-      });
-      return response.data;
-    };
+    let user: User | null = null;
 
-    let user: User;
+    // 1. Authenticate via server-side proxy (eliminates browser CORS preflight latency & adblock hangs)
     try {
-      user = await doLogin();
-    } catch (err: unknown) {
-      // Auto-retry once on network/timeout error
-      const isTransient =
-        err instanceof Error &&
-        (err.message.includes("timeout") ||
-          err.message.includes("Network") ||
-          err.message.includes("ECONNABORTED"));
+      const proxyRes = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+      });
 
-      if (isTransient) {
-        user = await doLogin();
+      if (proxyRes.ok) {
+        user = await proxyRes.json();
       } else {
-        throw err;
+        const errorData = await proxyRes.json().catch(() => null);
+        throw new Error(
+          errorData?.message || "Invalid credentials. Please verify your username and password."
+        );
       }
+    } catch (proxyError: unknown) {
+      const errorMsg = proxyError instanceof Error ? proxyError.message : "";
+      if (errorMsg.includes("Invalid credentials")) {
+        throw proxyError;
+      }
+
+      // 2. Direct fallback to apiClient if proxy is unreachable
+      const directRes = await apiClient.post<User>("/auth/login", credentials, {
+        timeout: 15000,
+      });
+      user = directRes.data;
+    }
+
+    if (!user) {
+      throw new Error("Unable to complete authentication. Please try again.");
     }
 
     if (typeof window !== "undefined" && user.accessToken) {
