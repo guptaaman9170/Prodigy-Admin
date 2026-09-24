@@ -18,7 +18,7 @@ export default function ProductCards({
   onDelete,
 }: ProductCardsProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {products.map((product) => {
         const isOutOfStock = product.stock <= 0;
         const isLowStock = product.stock > 0 && product.stock <= 10;
@@ -26,16 +26,16 @@ export default function ProductCards({
         return (
           <div
             key={product.id}
-            className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 flex flex-col justify-between gap-3 shadow-lg relative overflow-hidden group hover:border-slate-700 transition-all"
+            className="pro-card p-4 flex flex-col justify-between gap-3 pro-card-hover"
           >
             {/* Top row: Thumbnail + Details */}
             <div className="flex gap-3.5 items-start">
-              <div className="relative w-20 h-20 rounded-xl bg-slate-800 border border-slate-700/60 overflow-hidden flex items-center justify-center shrink-0">
+              <div className="relative w-18 h-18 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={product.thumbnail}
                   alt={product.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover"
                   loading="lazy"
                   onError={(e) => {
                     (e.currentTarget as HTMLImageElement).src =
@@ -43,17 +43,17 @@ export default function ProductCards({
                   }}
                 />
                 {product.isLocal && (
-                  <div className="absolute top-1 left-1 w-2 h-2 rounded-full bg-indigo-400 ring-2 ring-slate-900" />
+                  <div className="absolute top-1 left-1 w-2 h-2 rounded-full bg-blue-600 ring-2 ring-white" />
                 )}
               </div>
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-[11px] font-medium text-slate-400 capitalize">
+                  <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider capitalize">
                     {product.category}
                   </span>
                   {product.isLocal && (
-                    <span className="inline-flex items-center gap-0.5 px-1 rounded text-[10px] bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                    <span className="inline-flex items-center gap-0.5 px-1 rounded text-[10px] bg-blue-50 text-blue-700 font-bold border border-blue-100">
                       <Sparkles className="w-2.5 h-2.5" />
                       Local
                     </span>
@@ -62,20 +62,20 @@ export default function ProductCards({
 
                 <Link
                   href={`/products/${product.id}`}
-                  className="font-semibold text-slate-100 hover:text-indigo-400 transition-colors line-clamp-1 block text-sm mt-0.5"
+                  className="font-bold text-slate-900 hover:text-blue-600 transition-colors line-clamp-1 block text-sm mt-0.5"
                 >
                   {product.title}
                 </Link>
 
-                <p className="text-xs text-slate-400 mt-0.5 truncate">
-                  {product.brand || "Generic"}
+                <p className="text-xs text-slate-400 mt-0.5 font-mono">
+                  {product.sku ? `#${product.sku}` : `#PRD-${product.id}`}
                 </p>
 
                 <div className="flex items-center gap-3 mt-1.5">
-                  <div className="text-sm font-bold text-white">
+                  <div className="text-base font-extrabold text-slate-900">
                     {formatCurrency(product.price)}
                   </div>
-                  <div className="flex items-center gap-1 text-slate-300 text-xs">
+                  <div className="flex items-center gap-1 text-slate-700 text-xs font-semibold">
                     <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                     <span>{product.rating.toFixed(1)}</span>
                   </div>
@@ -84,23 +84,23 @@ export default function ProductCards({
             </div>
 
             {/* Bottom row: Stock Badge + Actions */}
-            <div className="flex items-center justify-between pt-3 border-t border-slate-800/80">
+            <div className="flex items-center justify-between pt-3 border-t border-slate-100">
               {/* Stock badge */}
               <div>
                 {isOutOfStock ? (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20">
-                    <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
                     Out of stock
                   </span>
                 ) : isLowStock ? (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                    {product.stock} left
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+                    {product.stock} units left
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    {product.stock} in stock
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                    {product.stock} units
                   </span>
                 )}
               </div>
@@ -109,7 +109,7 @@ export default function ProductCards({
               <div className="flex items-center gap-1">
                 <Link
                   href={`/products/${product.id}`}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors"
                   title="View Details"
                 >
                   <Eye className="w-4 h-4" />
@@ -117,7 +117,7 @@ export default function ProductCards({
                 <button
                   type="button"
                   onClick={() => onEdit(product)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 transition-colors"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
                   title="Edit Product"
                 >
                   <Pencil className="w-4 h-4" />
@@ -125,7 +125,7 @@ export default function ProductCards({
                 <button
                   type="button"
                   onClick={() => onDelete(product)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                   title="Delete Product"
                 >
                   <Trash2 className="w-4 h-4" />

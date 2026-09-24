@@ -4,8 +4,7 @@ import React from "react";
 import {
   ChevronLeft,
   ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
+  ChevronDown,
 } from "lucide-react";
 
 interface PaginationProps {
@@ -27,14 +26,12 @@ export default function Pagination({
 }: PaginationProps) {
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
-  // Calculate start and end indices
   const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const endItem = Math.min(currentPage * pageSize, totalItems);
 
-  // Generate page numbers with ellipses
   const getPageNumbers = (): (number | string)[] => {
     const pages: (number | string)[] = [];
-    const delta = 1; // Number of pages to show around current page
+    const delta = 1;
 
     if (totalPages <= 7) {
       for (let i = 1; i <= totalPages; i++) {
@@ -68,67 +65,58 @@ export default function Pagination({
   const pageNumbers = getPageNumbers();
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 px-2 text-sm text-slate-300">
-      {/* Left side: Showing X-Y of Z & Page Size selector */}
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 px-2 text-xs text-slate-500 font-medium">
+      {/* Left side: Showing X-Y of Z Products & Per page selector */}
       <div className="flex flex-wrap items-center gap-4">
-        {/* Item range counter */}
-        <span className="text-xs sm:text-sm text-slate-400">
-          Showing <span className="font-semibold text-slate-200">{startItem}–{endItem}</span> of{" "}
-          <span className="font-semibold text-slate-200">{totalItems}</span>
+        <span>
+          Showing <strong className="text-slate-900 font-bold">{startItem}–{endItem}</strong> of{" "}
+          <strong className="text-slate-900 font-bold">{totalItems}</strong> Products
         </span>
 
-        {/* Page size dropdown */}
-        <div className="flex items-center gap-2">
-          <label htmlFor="pageSizeSelect" className="text-xs text-slate-400">
+        {/* Per page selector */}
+        <div className="flex items-center gap-1.5">
+          <label htmlFor="pageSizeSelect" className="text-slate-500">
             Per page:
           </label>
-          <select
-            id="pageSizeSelect"
-            value={pageSize}
-            onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            disabled={disabled}
-            className="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 disabled:opacity-50 cursor-pointer"
-          >
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-          </select>
+          <div className="relative">
+            <select
+              id="pageSizeSelect"
+              value={pageSize}
+              onChange={(e) => onPageSizeChange(Number(e.target.value))}
+              disabled={disabled}
+              className="bg-white border border-slate-200 rounded-lg pl-2 pr-6 py-1 text-xs font-semibold text-slate-700 focus:outline-none focus:border-blue-500 appearance-none cursor-pointer"
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
+            <ChevronDown className="w-3 h-3 text-slate-400 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          </div>
         </div>
       </div>
 
-      {/* Right side: Page navigation controls */}
+      {/* Right side: Page navigation */}
       <div className="flex items-center gap-1">
-        {/* First Page */}
-        <button
-          type="button"
-          onClick={() => onPageChange(1)}
-          disabled={currentPage <= 1 || disabled}
-          className="p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-slate-200 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          title="First Page"
-        >
-          <ChevronsLeft className="w-4 h-4" />
-        </button>
-
-        {/* Previous Page */}
+        {/* Previous */}
         <button
           id="prev-page-button"
           type="button"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage <= 1 || disabled}
-          className="flex items-center gap-1 py-1.5 px-2.5 rounded-lg border border-slate-800 bg-slate-900 text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="p-1.5 rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-slate-900 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          title="Previous Page"
         >
           <ChevronLeft className="w-4 h-4" />
-          <span className="hidden sm:inline">Prev</span>
         </button>
 
-        {/* Numeric page buttons */}
+        {/* Numbers */}
         <div className="flex items-center gap-1 mx-1">
           {pageNumbers.map((p, idx) => {
             if (p === "...") {
               return (
                 <span
                   key={`ellipsis-${idx}`}
-                  className="px-2 py-1 text-xs text-slate-600 select-none"
+                  className="px-2 py-1 text-slate-400 select-none font-bold"
                 >
                   ...
                 </span>
@@ -144,10 +132,10 @@ export default function Pagination({
                 type="button"
                 onClick={() => onPageChange(pageNum)}
                 disabled={disabled}
-                className={`min-w-8 h-8 px-2 text-xs font-medium rounded-lg transition-all ${
+                className={`min-w-8 h-8 px-2 text-xs font-bold rounded-lg transition-all ${
                   isActive
-                    ? "bg-indigo-600 text-white font-semibold shadow-md shadow-indigo-600/30"
-                    : "border border-slate-800 bg-slate-900 text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+                    ? "bg-blue-600 text-white shadow-sm shadow-blue-500/20"
+                    : "border border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                 }`}
               >
                 {pageNum}
@@ -156,27 +144,16 @@ export default function Pagination({
           })}
         </div>
 
-        {/* Next Page */}
+        {/* Next */}
         <button
           id="next-page-button"
           type="button"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= totalPages || disabled}
-          className="flex items-center gap-1 py-1.5 px-2.5 rounded-lg border border-slate-800 bg-slate-900 text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="p-1.5 rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-slate-900 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          title="Next Page"
         >
-          <span className="hidden sm:inline">Next</span>
           <ChevronRight className="w-4 h-4" />
-        </button>
-
-        {/* Last Page */}
-        <button
-          type="button"
-          onClick={() => onPageChange(totalPages)}
-          disabled={currentPage >= totalPages || disabled}
-          className="p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-slate-200 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          title="Last Page"
-        >
-          <ChevronsRight className="w-4 h-4" />
         </button>
       </div>
     </div>
