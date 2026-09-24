@@ -3,7 +3,17 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { Lock, User, Eye, EyeOff, AlertCircle, ArrowRight, ShieldCheck, Sparkles, Loader2 } from "lucide-react";
+import {
+  Lock,
+  User,
+  Eye,
+  EyeOff,
+  AlertCircle,
+  ArrowRight,
+  Layers,
+  Sparkles,
+  Loader2,
+} from "lucide-react";
 
 function LoginForm() {
   const { login, isAuthenticated, isSubmitting } = useAuth();
@@ -19,14 +29,12 @@ function LoginForm() {
   const isExpired = searchParams.get("expired") === "1";
   const returnUrl = searchParams.get("returnUrl") || "/products";
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
       router.replace(returnUrl);
     }
   }, [isAuthenticated, router, returnUrl]);
 
-  // Demo auto-fill convenience helper
   const handleAutoFill = () => {
     setUsername("emilys");
     setPassword("emilyspass");
@@ -51,14 +59,10 @@ function LoginForm() {
     if (isSubmitting) return;
 
     setErrorMessage(null);
-
-    if (!validate()) {
-      return;
-    }
+    if (!validate()) return;
 
     try {
       await login({ username: username.trim(), password });
-      // Redirect handled by AuthContext or useEffect
     } catch (err: unknown) {
       const error = err as { message?: string };
       setErrorMessage(
@@ -71,50 +75,49 @@ function LoginForm() {
     <div className="w-full max-w-md">
       {/* Brand Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 shadow-lg shadow-indigo-500/25 mb-4">
-          <ShieldCheck className="w-8 h-8 text-white" />
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 shadow-xl shadow-blue-500/25 mb-4 text-white">
+          <Layers className="w-8 h-8" />
         </div>
-        <h1 className="text-3xl font-bold tracking-tight text-white">
-          Prodigy Admin
-        </h1>
-        <p className="mt-2 text-sm text-slate-400">
-          Sign in to manage inventory, catalog, and products
+        <div className="flex items-center justify-center gap-1.5 mb-1">
+          <h1 className="text-2xl font-black tracking-tight text-slate-900">
+            PulseStack
+          </h1>
+          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 uppercase tracking-wider">
+            PRO
+          </span>
+        </div>
+        <p className="text-xs text-slate-500">
+          Enterprise Store Operations &amp; Inventory Management
         </p>
       </div>
 
-      {/* Main Login Card */}
-      <div className="glass-panel rounded-2xl p-8 shadow-2xl relative overflow-hidden">
-        {/* Ambient Top Glow */}
-        <div className="absolute -top-24 -left-24 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-violet-500/10 rounded-full blur-3xl pointer-events-none" />
-
+      {/* Main Card */}
+      <div className="bg-white border border-slate-200/80 rounded-3xl p-8 shadow-xl relative overflow-hidden">
         {isExpired && (
-          <div className="mb-6 flex items-start gap-3 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-sm">
-            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-amber-400" />
+          <div className="mb-6 flex items-start gap-2.5 p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
             <span>Your session has expired. Please sign in again to continue.</span>
           </div>
         )}
 
         {errorMessage && (
-          <div className="mb-6 flex items-start gap-3 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-300 text-sm animate-in fade-in slide-in-from-top-2 duration-200">
-            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-rose-400" />
-            <span className="font-medium">{errorMessage}</span>
+          <div className="mb-6 flex items-start gap-2.5 p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
+            <span className="font-semibold">{errorMessage}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-          {/* Username Field */}
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+          {/* Username */}
           <div>
             <label
               htmlFor="username"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2"
+              className="block text-xs font-bold text-slate-700 mb-1.5"
             >
               Username
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                <User className="w-4 h-4" />
-              </div>
+              <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 id="username"
                 type="text"
@@ -127,30 +130,26 @@ function LoginForm() {
                 }}
                 disabled={isSubmitting}
                 placeholder="Enter username (e.g. emilys)"
-                className={`w-full pl-10 pr-4 py-2.5 bg-slate-900/80 border rounded-xl text-slate-100 placeholder-slate-500 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/40 ${
-                  fieldErrors.username
-                    ? "border-rose-500/60 focus:border-rose-500"
-                    : "border-slate-700/80 focus:border-indigo-500"
+                className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 border rounded-xl text-slate-900 placeholder-slate-400 text-xs font-medium focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all ${
+                  fieldErrors.username ? "border-rose-400" : "border-slate-200"
                 }`}
               />
             </div>
             {fieldErrors.username && (
-              <p className="mt-1.5 text-xs text-rose-400">{fieldErrors.username}</p>
+              <p className="mt-1 text-xs text-rose-600">{fieldErrors.username}</p>
             )}
           </div>
 
-          {/* Password Field */}
+          {/* Password */}
           <div>
             <label
               htmlFor="password"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2"
+              className="block text-xs font-bold text-slate-700 mb-1.5"
             >
               Password
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                <Lock className="w-4 h-4" />
-              </div>
+              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
@@ -162,80 +161,72 @@ function LoginForm() {
                   }
                 }}
                 disabled={isSubmitting}
-                placeholder="Enter your password"
-                className={`w-full pl-10 pr-10 py-2.5 bg-slate-900/80 border rounded-xl text-slate-100 placeholder-slate-500 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/40 ${
-                  fieldErrors.password
-                    ? "border-rose-500/60 focus:border-rose-500"
-                    : "border-slate-700/80 focus:border-indigo-500"
+                placeholder="Enter password"
+                className={`w-full pl-10 pr-10 py-2.5 bg-slate-50 border rounded-xl text-slate-900 placeholder-slate-400 text-xs font-medium focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all ${
+                  fieldErrors.password ? "border-rose-400" : "border-slate-200"
                 }`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-200 transition-colors"
-                tabIndex={-1}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
               >
-                {showPassword ? (
-                  <EyeOff className="w-4 h-4" />
-                ) : (
-                  <Eye className="w-4 h-4" />
-                )}
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
             {fieldErrors.password && (
-              <p className="mt-1.5 text-xs text-rose-400">{fieldErrors.password}</p>
+              <p className="mt-1 text-xs text-rose-600">{fieldErrors.password}</p>
             )}
           </div>
 
-          {/* Submit Button */}
+          {/* Submit */}
           <button
             id="login-submit-button"
             type="submit"
             disabled={isSubmitting}
-            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-medium text-sm shadow-lg shadow-indigo-600/30 transition-all transform active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm shadow-blue-500/20 transition-all transform active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed mt-2"
           >
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Signing in...</span>
+                <span>Authenticating...</span>
               </>
             ) : (
               <>
-                <span>Sign in to Dashboard</span>
+                <span>Sign In to Dashboard</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
           </button>
         </form>
 
-        {/* Demo Credentials Quick Helper */}
-        <div className="mt-6 pt-5 border-t border-slate-700/60">
-          <div className="flex items-center justify-between text-xs text-slate-400 mb-2.5">
-            <span className="font-medium text-slate-300">Assignment Test Credentials:</span>
+        {/* Quick Demo Credentials Assistant */}
+        <div className="mt-6 pt-5 border-t border-slate-100">
+          <div className="flex items-center justify-between text-xs mb-2">
+            <span className="font-semibold text-slate-600">Assignment Credentials:</span>
             <button
               type="button"
               onClick={handleAutoFill}
-              className="inline-flex items-center gap-1 text-indigo-400 hover:text-indigo-300 font-semibold transition-colors"
+              className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-bold transition-colors"
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>Fill Demo</span>
             </button>
           </div>
-          <div className="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5 text-xs font-mono text-slate-400 space-y-1">
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-mono text-slate-600 space-y-1">
             <div className="flex justify-between">
-              <span className="text-slate-500">Username:</span>
-              <span className="text-slate-300 font-semibold">emilys</span>
+              <span className="text-slate-400">User:</span>
+              <span className="font-bold text-slate-800">emilys</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500">Password:</span>
-              <span className="text-slate-300 font-semibold">emilyspass</span>
+              <span className="text-slate-400">Pass:</span>
+              <span className="font-bold text-slate-800">emilyspass</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Footer Info */}
-      <p className="mt-8 text-center text-xs text-slate-500">
+      <p className="mt-6 text-center text-xs text-slate-400">
         Connected to DummyJSON Auth API • Secured with Bearer Token
       </p>
     </div>
@@ -244,13 +235,11 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden">
-      {/* Decorative Background Mesh */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-indigo-900/20 to-violet-900/20 rounded-full blur-[120px] pointer-events-none" />
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center px-4 py-12">
       <Suspense
         fallback={
-          <div className="flex items-center gap-2 text-slate-400">
-            <Loader2 className="w-6 h-6 animate-spin text-indigo-500" />
+          <div className="flex items-center gap-2 text-slate-500 text-xs">
+            <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
             <span>Loading...</span>
           </div>
         }

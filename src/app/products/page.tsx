@@ -2,7 +2,9 @@
 
 import React, { useState, Suspense } from "react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import Navbar from "@/components/layout/Navbar";
+import Sidebar from "@/components/layout/Sidebar";
+import Header from "@/components/layout/Header";
+import DashboardOverview from "@/components/dashboard/DashboardOverview";
 import FilterBar from "@/components/products/FilterBar";
 import ProductTable from "@/components/products/ProductTable";
 import ProductCards from "@/components/products/ProductCards";
@@ -15,7 +17,7 @@ import ErrorState from "@/components/common/ErrorState";
 import { useProducts } from "@/hooks/useProducts";
 import { useProductOverlay } from "@/context/ProductOverlayContext";
 import { Product, ProductFormData } from "@/types/product";
-import { CheckCircle2, Package } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 function ProductsDashboardContent() {
   const {
@@ -35,6 +37,11 @@ function ProductsDashboardContent() {
   } = useProducts();
 
   const { createProduct, editProduct, removeProduct } = useProductOverlay();
+
+  // Navigation tab state: "dashboard" or "products"
+  const [activeTab, setActiveTab] = useState<"dashboard" | "products">("products");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
 
   // Modals state
   const [formModalOpen, setFormModalOpen] = useState(false);
@@ -87,101 +94,127 @@ function ProductsDashboardContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col">
-      <Navbar />
+    <div className="min-h-screen bg-slate-50 flex">
+      {/* Responsive Sidebar */}
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        productCount={total}
+        onOpenAddProduct={handleOpenAdd}
+        activeTab={activeTab}
+        onTabChange={(tab) => setActiveTab(tab)}
+      />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Page Title & Stats Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Product Inventory
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              Browse, search, filter, and manage items in your e-commerce catalog
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="px-3.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 flex items-center gap-2">
-              <Package className="w-4 h-4 text-indigo-400" />
-              <span>
-                Total Catalog: <strong className="text-white font-semibold">{total}</strong>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Filter and Search Bar */}
-        <FilterBar
+      {/* Main Content Area */}
+      <div className="flex-1 lg:pl-64 flex flex-col min-w-0">
+        {/* Top Header */}
+        <Header
+          onOpenSidebar={() => setSidebarOpen(true)}
+          onOpenAddProduct={handleOpenAdd}
           searchQuery={filters.search}
-          selectedCategory={filters.category}
-          sortBy={filters.sortBy}
-          order={filters.order}
-          categories={categories}
           onSearchChange={setSearch}
-          onCategoryChange={setCategory}
-          onSortChange={setSorting}
-          onResetFilters={resetFilters}
-          onAddProduct={handleOpenAdd}
+          breadcrumbs={
+            activeTab === "dashboard"
+              ? [
+                  { label: "PulseStack", href: "/products" },
+                  { label: "Dashboard Overview" },
+                ]
+              : [
+                  { label: "PulseStack", href: "/products" },
+                  { label: "Store Catalog", href: "/products" },
+                  { label: "Products" },
+                ]
+          }
         />
 
-        {/* Content Area: Loading / Error / Empty / Data */}
-        <div className="space-y-4">
-          {isLoading ? (
-            <>
-              <div className="hidden md:block">
-                <TableSkeleton rows={filters.limit} />
-              </div>
-              <div className="md:hidden">
-                <CardSkeleton count={Math.min(filters.limit, 6)} />
-              </div>
-            </>
-          ) : error ? (
-            <ErrorState message={error} onRetry={refetch} />
-          ) : products.length === 0 ? (
-            <EmptyState onReset={resetFilters} />
+        {/* Page Content Body */}
+        <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+          {activeTab === "dashboard" ? (
+            <DashboardOverview
+              products={products}
+              totalProducts={total}
+              categoriesCount={categories.length || 14}
+              onOpenAddProduct={handleOpenAdd}
+              onViewCatalog={() => setActiveTab("products")}
+            />
           ) : (
             <>
-              {/* Desktop View: Table */}
-              <div className="hidden md:block">
-                <ProductTable
-                  products={products}
-                  sortBy={filters.sortBy}
-                  order={filters.order}
-                  onSort={setSorting}
-                  onEdit={handleOpenEdit}
-                  onDelete={handleOpenDelete}
-                />
-              </div>
-
-              {/* Mobile View: Cards */}
-              <div className="md:hidden">
-                <ProductCards
-                  products={products}
-                  onEdit={handleOpenEdit}
-                  onDelete={handleOpenDelete}
-                />
-              </div>
-
-              {/* Custom Pagination */}
-              <Pagination
-                currentPage={filters.page}
-                pageSize={filters.limit}
+              {/* Products Catalog Filter Toolbar */}
+              <FilterBar
+                searchQuery={filters.search}
+                selectedCategory={filters.category}
+                sortBy={filters.sortBy}
+                order={filters.order}
+                categories={categories}
                 totalItems={total}
-                onPageChange={setPage}
-                onPageSizeChange={setLimit}
+                displayedItemsCount={products.length}
+                viewMode={viewMode}
+                onSearchChange={setSearch}
+                onCategoryChange={setCategory}
+                onSortChange={setSorting}
+                onResetFilters={resetFilters}
+                onAddProduct={handleOpenAdd}
+                onViewModeChange={setViewMode}
               />
+
+              {/* Data View: Loading, Error, Empty, or Table/Grid */}
+              <div className="space-y-4">
+                {isLoading ? (
+                  viewMode === "table" ? (
+                    <TableSkeleton rows={filters.limit} />
+                  ) : (
+                    <CardSkeleton count={Math.min(filters.limit, 6)} />
+                  )
+                ) : error ? (
+                  <ErrorState message={error} onRetry={refetch} />
+                ) : products.length === 0 ? (
+                  <EmptyState onReset={resetFilters} />
+                ) : (
+                  <>
+                    {/* View Switch: Table or Card Grid */}
+                    {viewMode === "table" ? (
+                      <ProductTable
+                        products={products}
+                        sortBy={filters.sortBy}
+                        order={filters.order}
+                        onSort={setSorting}
+                        onEdit={handleOpenEdit}
+                        onDelete={handleOpenDelete}
+                      />
+                    ) : (
+                      <ProductCards
+                        products={products}
+                        onEdit={handleOpenEdit}
+                        onDelete={handleOpenDelete}
+                      />
+                    )}
+
+                    {/* Pagination */}
+                    <Pagination
+                      currentPage={filters.page}
+                      pageSize={filters.limit}
+                      totalItems={total}
+                      onPageChange={setPage}
+                      onPageSizeChange={setLimit}
+                    />
+                  </>
+                )}
+              </div>
             </>
           )}
-        </div>
-      </main>
+        </main>
+      </div>
 
-      {/* Add / Edit Modal */}
+      {/* Add / Edit Form Modal */}
       <ProductFormModal
         isOpen={formModalOpen}
         onClose={() => setFormModalOpen(false)}
         onSubmit={handleFormSubmit}
+        onDeleteRequest={(prod) => {
+          setFormModalOpen(false);
+          setDeletingProduct(prod);
+          setDeleteModalOpen(true);
+        }}
         initialProduct={editingProduct}
         categories={categories}
       />
@@ -194,9 +227,9 @@ function ProductsDashboardContent() {
         product={deletingProduct}
       />
 
-      {/* Toast Notification */}
+      {/* Toast Feedback */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 text-xs sm:text-sm shadow-2xl animate-in slide-in-from-bottom-3 duration-200">
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl bg-slate-900 text-white text-xs font-semibold shadow-2xl animate-in slide-in-from-bottom-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>
@@ -210,8 +243,8 @@ export default function ProductsPage() {
     <ProtectedRoute>
       <Suspense
         fallback={
-          <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">
-            <span>Loading Dashboard...</span>
+          <div className="min-h-screen bg-slate-50 flex items-center justify-center text-slate-500 font-semibold text-xs">
+            <span>Loading PulseStack PRO...</span>
           </div>
         }
       >
