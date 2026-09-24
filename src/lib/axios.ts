@@ -7,7 +7,7 @@ export const USER_STORAGE_KEY = "prodigy_auth_user";
 // Shared Axios client instance
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 15000,
+  timeout: 30000,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
@@ -59,10 +59,14 @@ apiClient.interceptors.response.use(
     }
 
     // Extract a clear, readable message
-    const formattedMessage =
+    let formattedMessage =
       error.response?.data?.message ||
       error.message ||
       "An unexpected network or server error occurred.";
+
+    if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
+      formattedMessage = "Connection timed out. The server took too long to respond. Please try again.";
+    }
 
     const customError = new Error(formattedMessage);
     (customError as unknown as { originalError: AxiosError }).originalError = error;

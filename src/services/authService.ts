@@ -6,8 +6,30 @@ export const authService = {
    * Authenticates the user with DummyJSON /auth/login endpoint
    */
   async login(credentials: LoginCredentials): Promise<User> {
-    const response = await apiClient.post<User>("/auth/login", credentials);
-    const user = response.data;
+    const doLogin = async () => {
+      const response = await apiClient.post<User>("/auth/login", credentials, {
+        timeout: 30000,
+      });
+      return response.data;
+    };
+
+    let user: User;
+    try {
+      user = await doLogin();
+    } catch (err: unknown) {
+      // Auto-retry once on network/timeout error
+      const isTransient =
+        err instanceof Error &&
+        (err.message.includes("timeout") ||
+          err.message.includes("Network") ||
+          err.message.includes("ECONNABORTED"));
+
+      if (isTransient) {
+        user = await doLogin();
+      } else {
+        throw err;
+      }
+    }
 
     if (typeof window !== "undefined" && user.accessToken) {
       localStorage.setItem(TOKEN_STORAGE_KEY, user.accessToken);
