@@ -1,6 +1,6 @@
-# Prodigy Admin: Product Management Dashboard
+# PulseStack PRO: Product Management Dashboard
 
-A modern, high-performance Product Admin Dashboard built with **Next.js (App Router)**, **React**, **Tailwind CSS**, and **Axios**, powered by the [DummyJSON](https://dummyjson.com) API.
+A modern, enterprise-grade Product Admin Dashboard built with **Next.js (App Router)**, **React 19**, **Tailwind CSS**, and **Axios**, powered by the [DummyJSON](https://dummyjson.com) API. Styled with the clean, light **PulseStack PRO** enterprise design system.
 
 Live Repository: [https://github.com/guptaaman9170/Prodigy-Admin](https://github.com/guptaaman9170/Prodigy-Admin)
 
@@ -8,18 +8,12 @@ Live Repository: [https://github.com/guptaaman9170/Prodigy-Admin](https://github
 
 ## 🚀 Features Completed
 
-### 1. Authentication & Route Protection
-- [x] **Login Page**: Authenticates via `POST /auth/login` with credentials (`emilys` / `emilyspass`).
-- [x] **Error Feedback**: Displays real-time error banners for incorrect credentials.
-- [x] **Route Guard**: Protected routes (`/products`, `/products/[id]`) redirect unauthenticated visitors to `/login`.
-- [x] **Logout Flow**: One-click logout button in the navigation bar that invalidates stored session data and redirects to `/login`.
-- [x] **Click Spam Prevention**: Login button locks immediately with a spinner while the authentication request is in flight.
-- [x] **Convenience Helper**: 1-click **"Fill Demo"** button on the login screen to quickly populate assignment test credentials.
-
-### 2. Product Presentation & Responsive Layout
-- [x] **Desktop Table View**: Shows thumbnail, title, brand/SKU, category badge, formatted price ($ USD), star rating, and stock status.
-- [x] **Mobile Card Grid**: Automatically switches on smaller screens (`< 768px`) to touch-optimized cards.
-- [x] **Stock Indicators**: Dynamic visual badges for *In Stock*, *Low Stock (≤ 10)*, and *Out of Stock*.
+### 1. Enterprise UI & Responsive Navigation (PulseStack PRO)
+- [x] **Collapsible Sidebar**: Fixed desktop sidebar with collapsible mobile drawer, categorized into MAIN and MANAGEMENT sections.
+- [x] **Top Header**: Breadcrumb navigation (`PulseStack > Store Catalog > Products`), global search with `⌘K` shortcut, unread notifications bell, "+ New Product" button, and user profile with sign-out.
+- [x] **Executive Dashboard Overview**: Live revenue & inventory velocity charts, category share donut chart with taxonomy distribution, recent products snippet, and real-time system activity log.
+- [x] **KPI Metrics Cards**: Top-level performance indicators for Total Products, Active Categories, Average Rating, and Critical Low Stock items.
+- [x] **Dual View Modes**: Seamless toggle between Table View and Card/Grid View.
 
 ### 3. Custom Pagination (Zero Third-Party Libraries)
 - [x] **Server Pagination**: Paginated data loading via `limit` and `skip`.
