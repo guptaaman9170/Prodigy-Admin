@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Product, SortField, SortOrder } from "@/types/product";
 import { formatCurrency } from "@/lib/utils";
+import { productService } from "@/services/productService";
 import {
   Star,
   Eye,
@@ -150,6 +151,7 @@ export default function ProductTable({
               return (
                 <tr
                   key={product.id}
+                  onMouseEnter={() => productService.prefetchProduct(product.id)}
                   className={`hover:bg-slate-50/80 transition-colors group ${
                     isSelected ? "bg-blue-50/40" : ""
                   }`}

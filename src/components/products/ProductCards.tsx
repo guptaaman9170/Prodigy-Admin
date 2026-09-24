@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Product } from "@/types/product";
 import { formatCurrency } from "@/lib/utils";
+import { productService } from "@/services/productService";
 import { Star, Eye, Pencil, Trash2, Sparkles } from "lucide-react";
 
 interface ProductCardsProps {
@@ -26,6 +27,7 @@ export default function ProductCards({
         return (
           <div
             key={product.id}
+            onMouseEnter={() => productService.prefetchProduct(product.id)}
             className="pro-card p-4 flex flex-col justify-between gap-3 pro-card-hover"
           >
             {/* Top row: Thumbnail + Details */}

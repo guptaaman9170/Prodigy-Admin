@@ -3,6 +3,7 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { productService } from "@/services/productService";
 import {
   Lock,
   User,
@@ -62,6 +63,10 @@ function LoginForm() {
     if (!validate()) return;
 
     try {
+      // Warm up catalog and categories cache in parallel with auth so dashboard renders instantly
+      productService.getCategories().catch(() => {});
+      productService.getProducts({ limit: 10, skip: 0 }).catch(() => {});
+
       await login({ username: username.trim(), password });
     } catch (err: unknown) {
       const error = err as { message?: string };
